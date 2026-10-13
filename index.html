@@ -1,307 +1,304 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#090d16">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Se7e-IA">
-    <meta name="description" content="Se7e-IA - Interface de Agente Autônomo de Inteligência Artificial">
-
-    <title>Se7e-IA | Agente Autônomo</title>
-
-    <!-- PWA Manifest & Icons -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-3.5h-2V7h2z'/></svg>">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            400: '#818cf8',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#1e1b4b',
-                        },
-                        surface: {
-                            base: '#060911',
-                            card: '#0f172a',
-                            subtle: '#1e293b',
-                            border: '#334155'
-                        }
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-                            '50%': { opacity: '0.8', transform: 'scale(1.05)' }
-                        }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        /* Otimizações Mobile e Rolagem Suave */
-        body {
-            -webkit-tap-highlight-color: transparent;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #060911;
-        }
-
-        .custom-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-
-        .safe-bottom {
-            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-        }
-        .safe-top {
-            padding-top: max(0.75rem, env(safe-area-inset-top));
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Se7e-IA</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#111827">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#111827;color:#e5e7eb;font:15px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;height:100dvh}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#1f2937;border-bottom:1px solid #374151}
+.logo{width:34px;height:34px;border-radius:10px;background:#9333ea;display:grid;place-items:center;font-weight:700;color:#fff}
+header b{flex:1}
+button{font:inherit;background:#9333ea;color:#fff;border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
+button.g{background:#374151}
+#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-width:720px;width:100%;margin:0 auto}
+.m{padding:10px 14px;border-radius:14px;max-width:88%;white-space:pre-wrap;word-break:break-word}
+.ai{background:#1f2937;border:1px solid #374151;align-self:flex-start}
+.me{background:#9333ea;align-self:flex-end}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+details{background:#0b1220;border:1px solid #374151;border-radius:10px;padding:8px 12px}
+summary{cursor:pointer}
+pre{overflow-x:auto;font-size:12px;margin:8px 0 0}
+form{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid #374151}
+input{flex:1;min-width:0;font:inherit;background:#1f2937;color:inherit;border:1px solid #374151;border-radius:10px;padding:10px 14px}
+input:focus,button:focus-visible{outline:2px solid #a855f7}
+#ov{display:none;position:fixed;inset:0;background:#0009;z-index:5}
+#dr{position:fixed;top:0;bottom:0;left:0;width:min(310px,86vw);background:#1f2937;border-right:1px solid #374151;z-index:6;transform:translateX(-100%);transition:transform .2s;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+body.open #dr{transform:none}body.open #ov{display:block}
+.pj{text-align:left;background:#111827;border:1px solid #374151;border-radius:10px;padding:10px 12px;width:100%}
+.pj.on{border-color:#a855f7}.pj small{display:block;color:#9ca3af}
+</style>
 </head>
-<body class="h-full text-slate-100 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
-
-    <!-- Header Fixo Topo -->
-    <header class="sticky top-0 z-30 bg-surface-base/90 backdrop-blur-md border-b border-surface-border/50 safe-top">
-        <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 shadow-lg shadow-brand-500/20">
-                    <span class="text-white font-extrabold text-sm tracking-tighter">7</span>
-                    <span class="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                </div>
-                <div>
-                    <h1 class="text-sm font-semibold tracking-wide text-white flex items-center gap-1.5">
-                        Se7e-IA
-                        <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30">Agente</span>
-                    </h1>
-                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online • Pronto para tarefas
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button id="btn-limpar" title="Limpar conversa" class="p-2 text-slate-400 hover:text-slate-200 hover:bg-surface-subtle rounded-lg transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Área Principal de Mensagens -->
-    <main id="chat-container" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 max-w-3xl w-full mx-auto custom-scroll">
-        <!-- Boas-vindas Inicial -->
-        <div class="flex flex-col items-center justify-center text-center my-6 space-y-3">
-            <div class="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shadow-inner">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
-                </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-white">Como posso te ajudar hoje?</h2>
-            <p class="text-xs text-slate-400 max-w-sm">Envie um comando, pergunte sobre seu projeto ou solicite ações automatizadas.</p>
-
-            <!-- Sugestões de comandos rápidos -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full pt-2 text-left">
-                <button class prompt-suggestion="Resuma as principais tarefas pendentes" class="p-3 bg-surface-card hover:bg-surface-subtle border border-surface-border/60 rounded-xl transition text-xs text-slate-300 flex items-center justify-between group">
-                    <span>⚡ Tarefas Pendentes</span>
-                    <span class="text-slate-500 group-hover:text-brand-400">→</span>
-                </button>
-                <button prompt-suggestion="Analise a integridade do sistema" class="p-3 bg-surface-card hover:bg-surface-subtle border border-surface-border/60 rounded-xl transition text-xs text-slate-300 flex items-center justify-between group">
-                    <span>🛡️ Status do Sistema</span>
-                    <span class="text-slate-500 group-hover:text-brand-400">→</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Lista dinâmica de mensagens -->
-        <div id="messages-list" class="space-y-4">
-            <!-- Mensagem de Exemplo Inicial do Agente -->
-            <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-brand-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow">
-                    7
-                </div>
-                <div class="bg-surface-card border border-surface-border/60 text-slate-200 text-sm px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm">
-                    Olá! Sou o **Se7e-IA**, seu assistente autônomo. Você pode digitar comandos ou selecionar uma das ações sugeridas acima para começarmos.
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Barra de Input Fixa na Base -->
-    <footer class="sticky bottom-0 z-30 bg-surface-base/95 backdrop-blur-lg border-t border-surface-border/50 safe-bottom">
-        <div class="max-w-3xl mx-auto px-4 py-2.5">
-            <form id="chat-form" class="relative flex items-end gap-2">
-                <div class="relative flex-1 bg-surface-card border border-surface-border focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-500 rounded-2xl transition duration-150 shadow-inner">
-                    <textarea 
-                        id="user-input" 
-                        rows="1" 
-                        placeholder="Digite um comando para o Se7e-IA..." 
-                        class="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 px-4 py-3 resize-none focus:outline-none max-h-32 custom-scroll"
-                    ></textarea>
-                </div>
-
-                <button 
-                    type="submit" 
-                    id="btn-enviar"
-                    class="h-11 w-11 flex-shrink-0 bg-brand-600 hover:bg-brand-500 active:scale-95 text-white rounded-2xl flex items-center justify-center transition shadow-lg shadow-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                    </svg>
-                </button>
-            </form>
-            <div class="text-center mt-1.5">
-                <span class="text-[10px] text-slate-500 tracking-wide">Se7e-IA pode processar tarefas e automatizações locais e na nuvem.</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts de Interação & PWA -->
-    <script>
-        // Registro de Service Worker para PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then((reg) => console.log('ServiceWorker registrado:', reg.scope))
-                    .catch((err) => console.log('ServiceWorker registro falhou/ignorado:', err));
-            });
+<body>
+<header><button class="g" id="menu" aria-label="Projetos">☰</button><div class="logo">7</div><b>Se7e-IA</b><button class="g" id="new">Novo projeto</button></header>
+<div id="ov"></div>
+<aside id="dr"><button id="rep">Relatório dos projetos</button><div id="pl" style="display:flex;flex-direction:column;gap:8px"></div><button class="g" id="exp">Exportar projetos</button><button class="g" id="imp">Importar projetos</button><input type="file" id="fi" accept=".json,application/json" hidden><small id="qc" style="color:#9ca3af"></small></aside>
+<main id="chat"></main>
+<form id="f"><button type="button" class="g" id="clip" aria-label="Anexar imagem ou APK">📎</button><input type="file" id="fl" accept="image/*,.apk" multiple hidden><input id="i" placeholder="Descreva o app que você quer criar..." autocomplete="off"><button>Enviar</button></form>
+<script>
+const $=s=>document.querySelector(s),chat=$('#chat');
+const SYS={
+u:'Você é o Se7e, um agente que cria apps web para o dono. Dada a ideia, responda JSON: {"perguntas":[até 2 perguntas essenciais, só se faltar algo importante],"resumo":"resumo do app em 2 frases"}. Se não faltar nada, perguntas=[].',
+p:'Planeje o app. Stack padrão: React + Vite + TypeScript, deploy no Netlify, no máximo 8 arquivos, todos curtos. Nunca crie dados de exemplo falsos (mock): o app deve buscar dados reais de fontes públicas. Feeds RSS e a maioria das APIs não liberam CORS, então busque-os por uma Netlify Function em netlify/functions/. Se precisar de IA ou tradução, use uma Netlify Function com a chave em variável de ambiente (GEMINI_API_KEY), nunca no código do navegador. Responda JSON: {"nome":"","arquivos":[{"caminho":"","descricao":""}]}. Inclua package.json, index.html, vite.config.ts e os arquivos de src.',
+g:'Escreva o arquivo pedido, completo e funcional, consistente com os outros arquivos do plano. Mantenha o arquivo curto (no máximo 120 linhas), sem dados de exemplo extensos. Responda SÓ com o código, sem explicações e sem cercas de markdown.',
+r:'Você é um revisor rigoroso. Procure erros que quebrem o build ou o app (imports errados, arquivos faltando, dependências ausentes, bugs). Responda JSON: {"ok":true,"problemas":[{"arquivo":"","descricao":""}]}.'};
+const strip=t=>t.trim().replace(/^```\w*\n?/,'').replace(/\n?```$/,'');
+let T=null,busy=false,WL=null,S={cur:null,list:[]};
+try{S=JSON.parse(localStorage.getItem('se7e2'))||S}catch{}
+try{const o=JSON.parse(localStorage.getItem('se7e'));if(o&&!S.list.length){o.id='p0';o.chat=[];S.list.push(o);S.cur='p0'}}catch{}
+T=S.list.find(x=>x.id===S.cur)||null;
+const save=()=>{try{S.cur=T?T.id:null;localStorage.setItem('se7e2',JSON.stringify(S))}catch{}};
+function add(t,who){const d=document.createElement('div');d.className='m '+who;d.textContent=t;chat.append(d);d.scrollIntoView({block:'end'});return d}
+function msg(t,who='ai',keep=true){add(t,who);if(T&&keep){(T.chat=T.chat||[]).push([t,who]);save()}}
+function actions(items){const r=document.createElement('div');r.className='row';items.forEach(([l,f,c])=>{const b=document.createElement('button');b.textContent=l;if(c)b.className=c;b.onclick=()=>{if(l==='Continuar')r.remove();f()};r.append(b)});chat.append(r);r.scrollIntoView({block:'end'})}
+function pw(){let p='';try{p=localStorage.getItem('se7pw')||''}catch{}if(!p){p=prompt('Senha do Se7e-IA:')||'';try{localStorage.setItem('se7pw',p)}catch{}}return p}
+async function ai(system,prompt,json,images){
+  bump();
+  const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw(),system,prompt,json,images})});
+  const d=await res.json().catch(()=>null);
+  if(!d){const e=new Error('O servidor demorou demais (limite de tempo do Netlify).');e.timeout=true;throw e}
+  if(res.status===503&&(ai.n=(ai.n||0)+1)<4){await sleep(4000);return ai(system,prompt,json,images)}
+  ai.n=0;
+  if(res.status===401){try{localStorage.removeItem('se7pw')}catch{}throw new Error('Senha incorreta. Tente de novo.')}
+  if(d.limit){
+    const m=/retry in ([\d.]+)s/i.exec(d.error||''),w=m?parseFloat(m[1]):0;
+    if(w&&w<=65&&(ai.q=(ai.q||0)+1)<3){msg('Limite por minuto. Aguardando '+Math.ceil(w)+'s para tentar de novo...');await sleep(w*1000+1000);return ai(system,prompt,json,images)}
+    ai.q=0;const e=new Error(d.error||'limite');e.limit=true;throw e}
+  if(!res.ok)throw new Error(d.error||'Erro '+res.status);
+  ai.q=0;return json?JSON.parse(strip(d.text)):strip(d.text);
+}
+const ctx=(m=60000)=>Object.entries(T.files).map(([p,c])=>'### '+p+'\n'+c).join('\n\n').slice(0,m);
+const all=()=>Object.entries(T.files).map(([p,c])=>'=== '+p+' ===\n'+c).join('\n\n');
+function dl(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([all()],{type:'text/plain'}));a.download=((T.plan&&T.plan.nome)||'app')+'.txt';a.click()}
+function finish(replay){
+  const p=T.review.problemas||[];
+  if(!replay)msg(T.review.ok&&!p.length?'Revisão: não achei problemas.':'Revisão achou '+p.length+' ponto(s)'+(T.fixedList&&T.fixedList.length?' (mexi em: '+T.fixedList.join(', ')+')':' (não consegui corrigir sozinho)')+':\n'+p.map(x=>'• '+x.arquivo+': '+x.descricao).join('\n'));
+  for(const [n,c] of Object.entries(T.files)){const d=document.createElement('details'),s=document.createElement('summary'),pre=document.createElement('pre');s.textContent=n;pre.textContent=c;d.append(s,pre);chat.append(d)}
+  actions([['Publicar no GitHub',publish],['Copiar tudo',()=>navigator.clipboard.writeText(all())],['Baixar .txt',dl,'g']]);
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const slug=s=>String(s||'app').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'app';
+async function gh(b){
+  const res=await fetch('/api/github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...b,password:pw()})});
+  const d=await res.json().catch(()=>({error:'Resposta inválida do servidor'}));
+  if(res.status===401){try{localStorage.removeItem('se7pw')}catch{}throw new Error('Senha incorreta. Tente de novo.')}
+  if(!res.ok){const e=new Error(d.error||'Erro '+res.status);e.exists=!!d.exists;throw e}
+  return d;
+}
+async function fixWith(problems){
+  const r=await ai('Você corrige código. Dado o problema, diga quais arquivos precisam ser criados ou alterados, inclusive arquivos que estão faltando. Responda JSON: {"arquivos":["caminho"]}.','Problemas:\n'+problems+'\n\nArquivos existentes: '+Object.keys(T.files).join(', '),true);
+  const done=[];
+  for(const n of (r.arquivos||[]).map(n=>String(n).split('/').filter(x=>x&&x!=='..'&&x!=='.').join('/')).filter(Boolean).slice(0,4)){
+    msg((n in T.files?'Corrigindo ':'Criando ')+n+'...');
+    T.files[n]=await ai(SYS.g,'Crie ou corrija o arquivo '+n+' resolvendo estes problemas:\n'+problems+'\n\nArquivos do projeto:\n'+ctx(20000)+'\n\nResponda com o arquivo '+n+' completo e corrigido.');
+    save();done.push(n);
+  }
+  return done;
+}
+function publish(){if(busy)return;T.folder=slug(T.plan&&T.plan.nome);T.rounds=0;T.stage='push';save();run()}
+async function run(){
+  if(busy||!T)return;busy=true;
+  try{WL=await navigator.wakeLock.request('screen')}catch{}
+  try{
+    while(!['wait','done','ready'].includes(T.stage)){
+      if(T.stage==='understand'){
+        const r=await ai(SYS.u,'Ideia: '+T.idea+'\nRespostas do dono: '+(T.answers.join(' | ')||'nenhuma')+refs(),true);
+        if(r.perguntas&&r.perguntas.length&&!T.answers.length){T.asked=r.perguntas;T.stage='wait';save();msg(r.perguntas.join('\n'));break}
+        T.summary=r.resumo||T.idea;T.stage='plan';save();msg('Entendi: '+T.summary);
+      }else if(T.stage==='plan'){
+        const r=await ai(SYS.p,'App: '+T.summary+refs(),true);
+        T.plan=r;T.stage='gen';save();msg('Plano: '+r.arquivos.map(a=>a.caminho).join(', '));
+      }else if(T.stage==='gen'){
+        const n=T.plan.arquivos.find(a=>!(a.caminho in T.files));
+        if(!n){T.stage='review';save();continue}
+        msg('Escrevendo '+n.caminho+'...');
+        const pr='App: '+T.summary+refs()+'\nPlano: '+JSON.stringify(T.plan.arquivos)+'\nArquivos prontos:\n'+ctx()+'\n\nEscreva agora: '+n.caminho+' ('+n.descricao+')';
+        for(let k=0;;k++){
+          try{T.files[n.caminho]=await ai(SYS.g,pr+(k?'\n\nATENÇÃO: a tentativa anterior demorou demais. Escreva uma versão bem mais curta e simples, no máximo 60 linhas.':''));break}
+          catch(e){if(e.timeout&&k<2){msg('Demorou demais. Tentando uma versão mais curta...');continue}throw e}
         }
-
-        // Elementos do DOM
-        const form = document.getElementById('chat-form');
-        const input = document.getElementById('user-input');
-        const messagesList = document.getElementById('messages-list');
-        const chatContainer = document.getElementById('chat-container');
-        const btnLimpar = document.getElementById('btn-limpar');
-        const promptSuggestions = document.querySelectorAll('[prompt-suggestion]');
-
-        // Auto-resize do textarea conforme digitação
-        input.addEventListener('input', () => {
-            input.style.height = 'auto';
-            input.style.height = Math.min(input.scrollHeight, 128) + 'px';
-        });
-
-        // Submissão com tecla Enter (sem Shift)
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                form.dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // Adiciona mensagem ao chat
-        function appendMessage(text, isUser = false) {
-            const wrapper = document.createElement('div');
-            wrapper.className = isUser ? 'flex items-start justify-end gap-3' : 'flex items-start gap-3';
-
-            const avatar = isUser
-                ? `<div class="w-8 h-8 rounded-lg bg-surface-subtle border border-surface-border flex-shrink-0 flex items-center justify-center text-xs text-slate-300 font-medium">Você</div>`
-                : `<div class="w-8 h-8 rounded-lg bg-brand-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow">7</div>`;
-
-            const bubbleClass = isUser
-                ? 'bg-brand-600 text-white rounded-2xl rounded-tr-sm text-sm px-4 py-2.5 max-w-[85%] shadow-md whitespace-pre-wrap'
-                : 'bg-surface-card border border-surface-border/60 text-slate-200 rounded-2xl rounded-tl-sm text-sm px-4 py-3 max-w-[85%] shadow-sm whitespace-pre-wrap';
-
-            wrapper.innerHTML = isUser
-                ? `<div class="${bubbleClass}">${escapeHTML(text)}</div>${avatar}`
-                : `${avatar}<div class="${bubbleClass}">${escapeHTML(text)}</div>`;
-
-            messagesList.appendChild(wrapper);
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-        }
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        // Simulação de resposta do Agente Se7e-IA
-        function simularRespostaAgente(comando) {
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'typing-indicator';
-            typingIndicator.className = 'flex items-center gap-3';
-            typingIndicator.innerHTML = `
-                <div class="w-8 h-8 rounded-lg bg-brand-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow">7</div>
-                <div class="bg-surface-card border border-surface-border/60 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center space-x-1.5">
-                    <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce"></span>
-                    <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce [animation-delay:0.2s]"></span>
-                    <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce [animation-delay:0.4s]"></span>
-                </div>
-            `;
-            messagesList.appendChild(typingIndicator);
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-
-            setTimeout(() => {
-                const indicator = document.getElementById('typing-indicator');
-                if (indicator) indicator.remove();
-
-                const respostas = [
-                    `Comando recebido: "${comando}". Processando ações automatizadas no núcleo do Se7e-IA...`,
-                    `Executado com sucesso! Nenhuma anomalia detectada para o comando informado.`,
-                    `Agente Se7e-IA: Análise concluída. O ambiente está sincronizado e operante.`
-                ];
-                const respostaFinal = respostas[Math.floor(Math.random() * respostas.length)];
-                appendMessage(respostaFinal, false);
-            }, 1000);
-        }
-
-        // Evento de envio
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendMessage(text, true);
-            input.value = '';
-            input.style.height = 'auto';
-
-            simularRespostaAgente(text);
-        });
-
-        // Sugestões de cliques rápidos
-        promptSuggestions.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const prompt = btn.getAttribute('prompt-suggestion');
-                if (prompt) {
-                    appendMessage(prompt, true);
-                    simularRespostaAgente(prompt);
-                }
-            });
-        });
-
-        // Limpar conversa
-        btnLimpar.addEventListener('click', () => {
-            messagesList.innerHTML = '';
-            appendMessage('Histórico reiniciado. Como posso te ajudar agora?', false);
-        });
-    </script>
+        save();
+      }else if(T.stage==='review'){
+        msg('Revisando o código...');
+        T.review=await ai(SYS.r,ctx(),true);T.stage='fix';save();
+      }else if(T.stage==='fix'){
+        const p=T.review.problemas||[];
+        if(p.length)T.fixedList=await fixWith(p.map(x=>x.arquivo+': '+x.descricao).join('\n'));
+        T.stage='ready';save();finish();
+      }else if(T.stage==='push'){
+        msg('Enviando para o GitHub...');
+        let r;
+        try{r=await gh({action:'push',app:T.folder,files:T.files,first:!T.sha})}catch(e){if(e.exists){T.folder+='-'+Math.random().toString(36).slice(2,5);save();msg('Já existe um repositório com esse nome. Vou usar "'+T.folder+'".');continue}throw e}
+        T.sha=r.sha;T.polls=0;T.stage='build';save();msg('Enviado para o repositório "'+T.folder+'". Aguardando o build...');
+      }else if(T.stage==='build'){
+        const s=await gh({action:'status',app:T.folder,sha:T.sha});
+        if(s.state==='pending'){if(++T.polls>40)throw new Error('O build demorou demais. Confira o GitHub Actions.');await sleep(7000);continue}
+        if(s.state==='success'){T.stage='done';save();msg('Build passou. O código está no repositório "'+T.folder+'". Se o site já estiver ligado ao Netlify, ele publica sozinho.');break}
+        if(T.rounds>=3){T.stage='ready';save();msg('O build ainda falha depois de 3 correções. Último erro:\n'+s.log.slice(-700));break}
+        msg('O build falhou. Corrigindo (tentativa '+(T.rounds+1)+' de 3)...');
+        await fixWith('Erro do build:\n'+s.log.slice(-3000));T.rounds++;T.stage='push';save();
+      }
+    }
+  }catch(e){
+    if(e.limit){msg('O limite grátis acabou. Salvei tudo. Quando os limites voltarem, toque em Continuar.\n\nDetalhe do Google: '+String(e.message).slice(0,300))}
+    else msg('Erro: '+e.message);
+    actions([['Continuar',run]]);
+  }
+  try{WL&&WL.release()}catch{}
+  busy=false;
+}
+function hello(){msg('Oi! Descreva o app que você quer criar. Eu entendo a ideia, planejo, escrevo os arquivos e reviso o código.')}
+$('#f').onsubmit=e=>{e.preventDefault();const i=$('#i'),t=i.value.trim();if(!t||busy)return;i.value='';
+  if(/^\/?relat[óo]rio/i.test(t))return report();
+  if(!T){T={id:Date.now().toString(36),idea:t,answers:[],stage:'understand',files:{},chat:[],refs:PR.splice(0)};S.list.unshift(T);msg(t,'me');list()}
+  else if(T.stage==='wait'){msg(t,'me');T.answers.push(t);T.stage='understand'}
+  else return /^\/?alterar/i.test(t)?change(t):ask(t);
+  save();run()};
+$('#new').onclick=()=>{if(busy)return alert('Espere a etapa terminar.');T=null;save();document.body.classList.remove('open');render();$('#i').focus()};
+let PR=[];
+const LAB={understand:'entendendo a ideia',wait:'esperando sua resposta',plan:'planejando',gen:'escrevendo os arquivos',review:'revisando',fix:'corrigindo',ready:'pronto para publicar',push:'enviando ao GitHub',build:'build em andamento',done:'concluído'};
+const nome=p=>(p.plan&&p.plan.nome)||p.idea.slice(0,40);
+function list(){
+  const pl=$('#pl');pl.textContent='';
+  if(!S.list.length){const d=document.createElement('small');d.textContent='Nenhum projeto ainda.';pl.append(d)}
+  S.list.forEach(p=>{const b=document.createElement('button'),n=document.createElement('div'),sm=document.createElement('small');
+    b.className='pj'+(T&&p.id===T.id?' on':'');n.textContent=nome(p);sm.textContent=(LAB[p.stage]||p.stage)+(p.folder?' · '+p.folder:'');
+    b.append(n,sm);
+    b.onclick=()=>{if(busy)return alert('Espere a etapa terminar antes de trocar de projeto.');T=p;save();document.body.classList.remove('open');render()};
+    const x=document.createElement('button'),w=document.createElement('div');
+    x.className='g';x.textContent='Excluir';x.style.cssText='padding:4px 10px;font-size:12px;margin-top:4px';
+    x.onclick=()=>{if(busy)return;if(confirm('Excluir "'+nome(p)+'" do app? O repositório no GitHub não é apagado.')){S.list=S.list.filter(q=>q.id!==p.id);if(T&&T.id===p.id)T=null;save();render()}};
+    w.append(b,x);pl.append(w)});
+}
+function render(){
+  chat.textContent='';
+  if(!T){add('Oi! Descreva o projeto que você quer criar. Cada projeto novo ganha o próprio repositório no GitHub. Para ver como estão todos, abra o menu ☰ e peça o relatório. Use 📎 para enviar imagens de interface ou um APK de exemplo. Depois de pronto, pergunte o que quiser sobre o projeto ou peça mudanças começando com "alterar:".','ai');list();return}
+  if(!(T.chat||[]).length)add('Projeto: '+T.idea,'ai');
+  (T.chat||[]).forEach(([t,w])=>add(t,w));
+  if(T.stage==='done'||T.stage==='ready')finish(true);
+  else if(T.stage!=='wait')actions([['Continuar',run]]);
+  list();
+}
+async function report(){
+  if(busy)return;busy=true;document.body.classList.remove('open');
+  msg('Gerando o relatório...','ai',false);
+  try{
+    const apps=S.list.map(p=>p.folder).filter(Boolean),gi={};
+    if(apps.length){try{(await gh({action:'report',apps})).items.forEach(x=>gi[x.app]=x)}catch(e){gi._err=e.message}}
+    const bl={success:'passou ✔',failure:'falhou ✖',in_progress:'rodando',queued:'na fila',sem_build:'sem build'};
+    const lines=S.list.map((p,i)=>{
+      const g=gi[p.folder];
+      let l=(i+1)+'. '+nome(p)+'\n   Etapa: '+(LAB[p.stage]||p.stage)+' · '+Object.keys(p.files||{}).length+' arquivos';
+      if(g&&!g.error)l+='\n   Repositório: '+g.url+(g.privado?' (privado)':' (público)')+'\n   Build: '+(bl[g.build]||g.build)+' · último envio: '+new Date(g.atualizado).toLocaleString('pt-BR');
+      else if(p.folder)l+='\n   Repositório: '+p.folder+(g&&g.error?' ('+g.error+')':' (sem dados do GitHub)');
+      return l});
+    msg('Relatório dos projetos ('+S.list.length+'):\n\n'+(lines.join('\n\n')||'Nenhum projeto ainda.')+(gi._err?'\n\nNão consegui consultar o GitHub: '+gi._err:''),'ai',false);
+  }catch(e){msg('Erro no relatório: '+e.message,'ai',false)}
+  busy=false;
+}
+$('#menu').onclick=()=>{list();bump(0);document.body.classList.add('open')};
+$('#ov').onclick=()=>document.body.classList.remove('open');
+$('#rep').onclick=report;
+const refs=()=>T&&T.refs&&T.refs.length?'\n\nReferências enviadas pelo dono (use só como inspiração de tipo de app, fluxo e visual; não copie marca, nome, textos nem código; crie algo original):\n'+T.refs.map(r=>'['+r.tipo+' '+r.nome+'] '+r.resumo).join('\n\n'):'';
+function bump(a=1){try{const d=new Date().toISOString().slice(0,10);let q=JSON.parse(localStorage.getItem('se7q')||'{}');if(q.d!==d)q={d,n:0};q.n+=a;localStorage.setItem('se7q',JSON.stringify(q));$('#qc').textContent='Chamadas ao Gemini hoje (aprox.): '+q.n}catch{}}
+const SYS_QA='Você é o Se7e, assistente do dono deste projeto de app. Responda em português do Brasil, de forma objetiva e clara, usando só o contexto fornecido. Se faltar informação, diga o que falta. Não invente arquivos nem funcionalidades.';
+function localAnswer(q){
+  const l=q.trim().toLowerCase();
+  if(/^(em que etapa|qual (é )?(a )?(etapa|situa[çc][ãa]o|status)|como est[áa] (o )?(projeto|andamento))/.test(l))return 'Este projeto está: '+(LAB[T.stage]||T.stage)+'. Tem '+Object.keys(T.files||{}).length+' arquivos'+(T.folder?' e o repositório é "'+T.folder+'"':'')+'.';
+  if(T.folder&&/^(qual (é )?(o )?(nome do )?reposit[óo]rio|onde est[áa] (o )?(c[óo]digo|reposit[óo]rio))/.test(l))return 'O repositório é "'+T.folder+'". Para ver o link e o resultado do build, peça o relatório.';
+  return null;
+}
+function ctxQA(q){
+  const f=T.files||{},names=Object.keys(f),ql=q.toLowerCase();
+  let rel=names.filter(n=>ql.includes(n.split('/').pop().replace(/\.\w+$/,'').toLowerCase())).slice(0,3);
+  if(!rel.length)rel=names.filter(n=>/(^|\/)(App|main)\.|package\.json$/.test(n)).slice(0,2);
+  return 'Projeto: '+nome(T)+'\nIdeia do dono: '+T.idea+'\nResumo: '+(T.summary||'')+'\nEtapa: '+(LAB[T.stage]||T.stage)+'\nRepositório: '+(T.folder||'ainda não publicado')+'\nArquivos: '+names.join(', ')+'\nProblemas da revisão: '+JSON.stringify((T.review&&T.review.problemas)||[]).slice(0,800)+refs()+'\n\n'+rel.map(n=>'### '+n+'\n'+f[n].slice(0,6000)).join('\n\n');
+}
+async function ask(t){
+  msg(t,'me');const l=localAnswer(t);if(l)return msg(l);
+  busy=true;const th=add('Pensando...','ai');
+  try{
+    const h=(T.chat||[]).slice(-7,-1).map(([x,w])=>(w==='me'?'Dono: ':'Se7e: ')+x.slice(0,300)).join('\n');
+    const r=await ai(SYS_QA,ctxQA(t)+'\n\nConversa recente:\n'+h+'\n\nPergunta: '+t,false);
+    th.remove();msg(r);
+  }catch(e){th.remove();msg(e.limit?'O limite grátis do Gemini acabou. Tente de novo mais tarde.\n\n'+String(e.message).slice(0,200):'Erro: '+e.message,'ai',false)}
+  busy=false;
+}
+async function change(t){
+  const pedido=t.replace(/^\/?alterar:?\s*/i,'');
+  if(!pedido)return msg('Escreva o que mudar depois de "alterar:".','ai',false);
+  if(!T.review)return msg('O projeto ainda não foi revisado. Termine a geração antes de pedir alterações.','ai',false);
+  msg(t,'me');busy=true;
+  try{
+    const d=await fixWith('Pedido de alteração do dono: '+pedido);
+    T.stage='ready';save();
+    msg(d.length?'Alterei: '+d.join(', ')+'. Toque em Publicar no GitHub para enviar.':'Não identifiquei arquivos para alterar. Descreva a mudança com mais detalhes.');
+    finish(true);
+  }catch(e){msg(e.limit?'O limite grátis do Gemini acabou. Tente de novo mais tarde.':'Erro: '+e.message,'ai',false)}
+  busy=false;
+}
+async function zipList(f){
+  const tail=new Uint8Array(await f.slice(Math.max(0,f.size-70000)).arrayBuffer());let e=-1;
+  for(let i=tail.length-22;i>=0;i--)if(tail[i]==0x50&&tail[i+1]==0x4b&&tail[i+2]==5&&tail[i+3]==6){e=i;break}
+  if(e<0)throw new Error('o arquivo não parece um APK válido');
+  const dv=new DataView(tail.buffer),n=dv.getUint16(e+10,true),size=dv.getUint32(e+12,true),off=dv.getUint32(e+16,true);
+  const cd=new DataView(await f.slice(off,off+size).arrayBuffer()),out=[];let p=0;
+  for(let i=0;i<n;i++){const m=cd.getUint16(p+10,true),cs=cd.getUint32(p+20,true),nl=cd.getUint16(p+28,true),el=cd.getUint16(p+30,true),cl=cd.getUint16(p+32,true),lo=cd.getUint32(p+42,true);
+    out.push({name:new TextDecoder().decode(new Uint8Array(cd.buffer,p+46,nl)),m,cs,lo});p+=46+nl+el+cl}
+  return out;
+}
+async function zipRead(f,en){
+  const h=new DataView(await f.slice(en.lo,en.lo+30).arrayBuffer()),st=en.lo+30+h.getUint16(26,true)+h.getUint16(28,true);
+  let b=new Uint8Array(await f.slice(st,st+en.cs).arrayBuffer());
+  if(en.m===8)b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  return b;
+}
+async function apkRef(f){
+  const L=await zipList(f),nm=L.map(x=>x.name),has=re=>nm.some(n=>re.test(n));
+  const tech=[has(/libflutter\.so|flutter_assets/)&&'Flutter',has(/index\.android\.bundle/)&&'React Native',has(/assets\/www\/|capacitor/i)&&'WebView/Cordova/Capacitor',has(/libunity\.so/)&&'Unity',has(/^classes\.dex$/)&&'Android nativo (dex)'].filter(Boolean);
+  const man=L.find(x=>x.name==='AndroidManifest.xml'),arsc=L.find(x=>x.name==='resources.arsc');let perms=[],cls=[],txt=[];
+  if(man){const t=new TextDecoder('utf-16le').decode(await zipRead(f,man)),d=[...new Set(t.match(/[A-Za-z]\w*(?:\.[A-Za-z_][\w$]*){2,}/g)||[])];
+    perms=d.filter(x=>/^android\.permission\./.test(x)).map(x=>x.slice(19));cls=d.filter(x=>!/^(android|androidx|com\.google\.android|http)/.test(x)).slice(0,40)}
+  if(arsc&&arsc.cs<30e6){const b=await zipRead(f,arsc),t=new TextDecoder().decode(b)+'\n'+new TextDecoder('utf-16le').decode(b.subarray(0,b.length&~1));
+    txt=[...new Set(t.match(/[A-ZÀ-Ý][^\n\r\0-\x1f<>{}\\\/]{3,60}/g)||[])].filter(x=>/ /.test(x)&&!/^(Theme|Widget|TextAppearance|Base)\./.test(x)).slice(0,120)}
+  const lay=nm.filter(n=>/^res\/layout[^/]*\/[^/]+\.xml$/.test(n)).map(n=>n.split('/').pop().replace('.xml','')).filter((v,i,a)=>a.indexOf(v)===i&&!/^(abc_|design_|mtrl_|material_|notification_|select_dialog|support_|m3_|custom_dialog|expand_button|ime_base|preference)/.test(v)).slice(0,40);
+  const sum='Arquivo: '+f.name+' ('+Math.round(f.size/1e6)+' MB)\nTecnologia provável: '+(tech.join(', ')||'não identificada')+'\nPermissões: '+(perms.join(', ')||'nenhuma lida')+'\nClasses/telas: '+cls.join(', ')+'\nLayouts: '+lay.join(', ')+'\nTextos da interface: '+txt.join(' | ');
+  const resumo=await ai('Você analisa aplicativos Android a partir de pistas do APK.',sum.slice(0,7000)+'\n\nCom base nessas pistas, diga em português: que tipo de app é, quais as funcionalidades e telas prováveis e o fluxo principal. Seja objetivo, no máximo 1500 caracteres.',false);
+  return{tipo:'apk',nome:f.name,resumo};
+}
+async function imgRef(f){
+  const bm=await createImageBitmap(f),k=Math.min(1,1024/Math.max(bm.width,bm.height)),c=document.createElement('canvas');
+  c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+  const data=c.toDataURL('image/jpeg',.8).split(',')[1];
+  const resumo=await ai('Você analisa interfaces de aplicativos.','Descreva esta tela para um desenvolvedor reproduzi-la em React e CSS: layout e hierarquia, componentes, cores (hex aproximados), tipografia, espaçamentos, ícones, bordas e estados. Seja objetivo, no máximo 1500 caracteres, em português.',false,[{mime:'image/jpeg',data}]);
+  return{tipo:'imagem',nome:f.name,resumo};
+}
+async function attach(files){
+  if(busy)return;busy=true;
+  for(const f of files){
+    try{
+      msg('Analisando '+f.name+'...','ai',false);
+      const r=/\.apk$/i.test(f.name)?await apkRef(f):await imgRef(f);
+      if(T){(T.refs=T.refs||[]).push(r);save()}else PR.push(r);
+      msg('📎 '+f.name+' analisado. Vou usar como referência.\n\n'+r.resumo.slice(0,300)+'…');
+    }catch(e){msg('Não consegui analisar '+f.name+': '+(e.limit?'limite grátis do Gemini atingido.':e.message),'ai',false)}
+  }
+  busy=false;
+}
+$('#clip').onclick=()=>$('#fl').click();
+$('#fl').onchange=e=>{const fs=[...e.target.files];e.target.value='';attach(fs)};
+$('#exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='se7e-projetos.json';a.click()};
+$('#imp').onclick=()=>$('#fi').click();
+$('#fi').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const o=JSON.parse(await f.text());if(!Array.isArray(o.list))throw new Error('arquivo inválido');
+    let n=0;o.list.forEach(p=>{if(p&&p.id&&!S.list.some(x=>x.id===p.id)){S.list.push(p);n++}});save();list();alert(n+' projeto(s) importado(s).')}
+  catch(err){alert('Não consegui importar: '+err.message)}};
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script>
 </body>
 </html>
